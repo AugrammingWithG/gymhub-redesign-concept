@@ -513,6 +513,8 @@ h1, h2, h3 { margin: 0; }
   .awards { gap: 16px; }
   .foot__grid { grid-template-columns: 1fr; }
   .hero__actions .btn { width: 100%; }
+  .close { padding-bottom: 52vw; }
+  .close::before { width: 64vw; top: auto; bottom: -20vw; right: -14vw; transform: none; }
   .plate-card__what { font-size: .92rem; }
 }
 
