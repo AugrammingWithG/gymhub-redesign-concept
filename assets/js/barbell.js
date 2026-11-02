@@ -21,7 +21,9 @@
     blue: { color: "#1f55b5", t: 0.046, ink: "#ffffff" },
     yellow: { color: "#f2c200", t: 0.038, ink: "#171717" },
     green: { color: "#1b7d3d", t: 0.032, ink: "#ffffff" },
-    white: { color: "#f2f2ee", t: 0.028, ink: "#171717" }
+    white: { color: "#f2f2ee", t: 0.028, ink: "#171717" },
+    black: { color: "#232427", t: 0.06, ink: "#c3cacd" },
+    change: { color: "#aeb6ba", t: 0.02, ink: "#171717", small: 0.118 }
   };
   var R = 0.225;            // plate radius (450 mm)
   var SLEEVE_START = 0.688; // inside face of the sleeve
@@ -159,6 +161,14 @@
   function makePlate(kind, top, bottom) {
     var spec = PLATES[kind], s = getShared(), t = spec.t, h = t / 2, hr = h * 0.78;
     var g = new T.Group();
+    if (spec.small) {
+      var disc = new T.Mesh(new T.LatheGeometry([[0.0262, -h], [spec.small, -h], [spec.small, h], [0.0262, h], [0.0262, -h]]
+        .map(function (p) { return new T.Vector2(p[0], p[1]); }), 64), s.steel);
+      disc.rotation.z = -Math.PI / 2; disc.castShadow = true;
+      g.add(disc);
+      g.userData.t = t;
+      return g;
+    }
     var rubberPts = [
       [0.0858, -hr], [0.186, -hr], [0.199, -h], [0.219, -h], [R, -h + 0.005],
       [R, h - 0.005], [0.219, h], [0.199, h], [0.186, hr], [0.0858, hr], [0.0858, -hr]
@@ -213,6 +223,7 @@
   function BarScene(canvas, opts) {
     this.canvas = canvas;
     this.opts = opts;
+    this.view = opts.view || null;
     this.visible = false;
     this.pointer = { x: 0, y: 0, tx: 0, ty: 0 };
     this.shake = 0;
@@ -241,6 +252,7 @@
     key.shadow.bias = -0.0004;
     var sc2 = key.shadow.camera; sc2.left = -1.6; sc2.right = 1.6; sc2.top = 1.6; sc2.bottom = -1.6; sc2.near = 0.5; sc2.far = 8;
     sc.add(key);
+    this.key = key;
     var rim = new T.DirectionalLight(0xbfd0ff, 1.1);
     rim.position.set(-2.5, 1.6, -2.4);
     sc.add(rim);
@@ -263,7 +275,7 @@
     var self = this;
     new IntersectionObserver(function (en) {
       self.visible = en[0].isIntersecting;
-      if (self.visible) { self.clock.getDelta(); requestAnimationFrame(self.tick); }
+      if (self.visible) { self.clock.getDelta(); self.request(); }
     }, { rootMargin: "80px" }).observe(canvas);
 
     if (opts.parallax && !reduceMotion) {
@@ -310,7 +322,72 @@
       }
     }
     if (reduceMotion) this.items.forEach(function (it) { it.start = -10; });
-    requestAnimationFrame(this.tick);
+    this.request();
+  };
+
+  BarScene.prototype.request = function () {
+    if (!this.raf) this.raf = requestAnimationFrame(this.tick);
+  };
+
+  /* Plates live in named plans; showing a plan slides its first n plates on and the rest off. */
+  BarScene.prototype.definePlan = function (id, items) {
+    (this.plans || (this.plans = {}))[id] = items;
+    return items;
+  };
+
+  BarScene.prototype.showPlan = function (id, n) {
+    var plan = this.plans && this.plans[id];
+    if (!plan) return;
+    if (n == null) n = plan.length;
+    if (this.planId === id && this.planN === n) return;
+    this.planId = id; this.planN = n;
+    this.items.forEach(function (it) { it.on = false; });
+    plan.forEach(function (it, i) { it.on = i < n; });
+    this.layout();
+  };
+
+  /* Remove a plan's plates once they have slid off. */
+  BarScene.prototype.dropItems = function (items) {
+    var self = this;
+    items.forEach(function (it) {
+      self.rig.remove(it.near); self.rig.remove(it.far);
+      var k = self.items.indexOf(it);
+      if (k > -1) self.items.splice(k, 1);
+    });
+  };
+
+  /* Chalk dust: a short-lived particle burst at a world point. */
+  BarScene.prototype.burst = function (x, y, z, amount) {
+    if (reduceMotion) return;
+    var n = Math.round(140 * (amount || 1));
+    var pos = new Float32Array(n * 3), vel = [];
+    for (var i = 0; i < n; i++) {
+      pos[i * 3] = x + (Math.random() - 0.5) * 0.06;
+      pos[i * 3 + 1] = y + (Math.random() - 0.5) * 0.04;
+      pos[i * 3 + 2] = z + (Math.random() - 0.5) * 0.06;
+      var a = Math.random() * Math.PI * 2, sp = 0.25 + Math.random() * 0.9;
+      vel.push(Math.cos(a) * sp, 0.3 + Math.random() * 0.9, Math.sin(a) * sp);
+    }
+    var geo = new T.BufferGeometry();
+    geo.setAttribute("position", new T.BufferAttribute(pos, 3));
+    var pts = new T.Points(geo, new T.PointsMaterial({ color: 0xf2f2ee, size: 0.011, transparent: true, opacity: 0.9, depthWrite: false }));
+    this.scene.add(pts);
+    (this.dust || (this.dust = [])).push({ pts: pts, vel: vel, born: this.clock.elapsedTime, life: 1.3 });
+    this.request();
+  };
+
+  /* A steel beam above the bar: the ceiling. */
+  BarScene.prototype.addCeiling = function () {
+    var s = getShared();
+    var beam = new T.Group();
+    beam.add(cyl(0.022, 1.24, s.chrome, 0));
+    [-0.62, 0.62].forEach(function (x) { // bolted pin collars where the bar strikes
+      var c = cyl(0.03, 0.05, s.chrome, x); c.rotation.z = 0; c.rotation.x = Math.PI / 2; c.position.y = -0.005;
+      beam.add(c);
+    });
+    this.scene.add(beam);
+    this.beam = beam;
+    return beam;
   };
 
   BarScene.prototype.setLoaded = function (n) {
@@ -323,6 +400,7 @@
     if (!w || !h) return;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
+    if (this.view) { this._w = -1; this.request(); return; }
     var frame = this.opts.frame(w / h, w);
     this.frameSpec = frame;
     this.camera.fov = frame.fov;
@@ -340,9 +418,27 @@
   };
 
   BarScene.prototype.tick = function () {
+    this.raf = null;
     if (!this.visible) return;
     this.clock.getDelta();
     var now = this.clock.elapsedTime, moving = false, self = this;
+
+    if (this.view) this.applyView();
+
+    if (this.dust && this.dust.length) {
+      this.dust = this.dust.filter(function (d) {
+        var age = now - d.born, arr = d.pts.geometry.attributes.position.array, dt = 1 / 60;
+        if (age > d.life) { self.scene.remove(d.pts); d.pts.geometry.dispose(); d.pts.material.dispose(); return false; }
+        for (var i = 0; i < d.vel.length; i += 3) {
+          d.vel[i + 1] -= 2.4 * dt; d.vel[i] *= 0.985; d.vel[i + 2] *= 0.985;
+          arr[i] += d.vel[i] * dt; arr[i + 1] = Math.max(0.002, arr[i + 1] + d.vel[i + 1] * dt); arr[i + 2] += d.vel[i + 2] * dt;
+        }
+        d.pts.geometry.attributes.position.needsUpdate = true;
+        d.pts.material.opacity = 0.9 * (1 - age / d.life);
+        moving = true;
+        return true;
+      });
+    }
 
     this.items.forEach(function (it) {
       if (it.x === it.to) return;
@@ -359,51 +455,98 @@
       self.place(it, it.from + (it.to - it.from) * e);
     });
 
-    var f = this.frameSpec, pt = this.pointer;
+    var f = this.view || this.frameSpec, pt = this.pointer;
+    var hy = this.view ? (this.hold ? this.hold.y : 0) * (this.view.follow || 0) : 0;
     pt.x += (pt.tx - pt.x) * 0.05; pt.y += (pt.ty - pt.y) * 0.05;
     var drift = reduceMotion ? 0 : Math.sin(now * 0.25) * 0.03;
     this.shake *= 0.86;
     var sk = this.shake > 0.01 ? (Math.random() - 0.5) * 0.006 * this.shake : 0;
+    var par = this.view ? 0.5 : 1;
     this.camera.position.set(
-      f.pos[0] + pt.x * 0.22 + drift,
-      f.pos[1] - pt.y * 0.12 + sk,
-      f.pos[2] + pt.x * -0.12
+      f.pos[0] + (pt.x * 0.22 + drift) * par,
+      f.pos[1] - pt.y * 0.12 * par + sk + hy * 0.6,
+      f.pos[2] + pt.x * -0.12 * par
     );
-    this.camera.lookAt(f.look[0], f.look[1] + sk * 0.5, f.look[2]);
+    this.camera.lookAt(f.look[0], f.look[1] + sk * 0.5 + hy, f.look[2]);
     this.renderer.render(this.scene, this.camera);
 
     var settling = this.shake > 0.01 || Math.abs(pt.tx - pt.x) > 0.001 || Math.abs(pt.ty - pt.y) > 0.001;
-    if (moving || settling || (this.opts.parallax && !reduceMotion)) requestAnimationFrame(this.tick);
+    if (moving || settling || this.busy || (this.opts.parallax && !reduceMotion)) this.request();
   };
 
-  window.GymBarKit = { T: T, makePlate: makePlate, buildEnv: buildEnv, R: R };
+  /* Stage only: camera, lift, ceiling and light come from an externally driven view object. */
+  BarScene.prototype.applyView = function () {
+    var v = this.view, w = this.canvas.clientWidth, h = this.canvas.clientHeight;
+    if (v.fov !== this._fov || v.ox !== this._ox || v.oy !== this._oy || w !== this._w || h !== this._h) {
+      this._fov = v.fov; this._ox = v.ox; this._oy = v.oy; this._w = w; this._h = h;
+      this.camera.fov = v.fov;
+      this.camera.setViewOffset(w, h, (v.ox || 0) * w, (v.oy || 0) * h, w, h);
+      this.camera.updateProjectionMatrix();
+    }
+    this.rig.position.y = R + (v.lift || 0) + (this.hold ? this.hold.y : 0);
+    if (this.beam) { this.beam.position.y = v.beamY; this.beam.visible = v.beamY < 2.4; }
+    var warm = v.warm || 0;
+    this.renderer.toneMappingExposure = 1.05 + warm * 0.14;
+    if (this.key) this.key.color.setRGB(1, 1 - warm * 0.08, 1 - warm * 0.2);
+  };
+
+  window.GymBarKit = { T: T, makePlate: makePlate, buildEnv: buildEnv, R: R, PLATES: PLATES };
 
   /* ---------- the two scenes ---------- */
   function init() {
     var api = {};
-    var heroCanvas = document.getElementById("hero-bar");
-    if (heroCanvas) {
-      var hero = new BarScene(heroCanvas, {
-        parallax: true, stagger: 0.16, fov: 24,
-        frame: function (a, w) {
-          if (w < 700) return { fov: 25, pos: [2.5, 0.5, 0.42], look: [0.72, 0.27, 0], offsetX: -0.12, offsetY: 0.02 };
-          if (a < 1.3) return { fov: 30, pos: [1.9, 0.36, 1.9], look: [0.0, 0.42, 0], offsetX: 0.08, offsetY: -0.13 };
-          return { fov: 31, pos: [1.85, 0.3, 1.95], look: [-0.05, 0.42, 0], offsetX: 0.12, offsetY: -0.165 };
-        }
-      });
-      [
-        ["red", "+$550K", "revenue / yr"],
-        ["blue", "+309", "members"],
-        ["yellow", "202", "leads"],
-        ["green", "+70%", "profit"]
-      ].forEach(function (p) {
-        hero.addPair(function (isNear) { return makePlate(p[0], isNear ? p[1] : "GYMHUB", isNear ? p[2] : ""); });
-      });
-      hero.addPair(function () { return makeCollar(); });
-      hero.items.forEach(function (it) { it.dur = 0.85; });
-      hero.renderOnce();
-      setTimeout(function () { hero.setLoaded(5); }, reduceMotion ? 0 : 350);
-      api.hero = hero;
+    var stageCanvas = document.getElementById("stage");
+    if (stageCanvas) {
+      var small = window.matchMedia("(max-width: 820px)").matches;
+      var view = { pos: [1.85, 0.3, 1.95], look: [-0.05, 0.42, 0], fov: 31, ox: 0.12, oy: -0.165, lift: 0, beamY: 0.62, warm: 0, follow: 0 };
+      var stage = new BarScene(stageCanvas, { parallax: !small, stagger: 0.12, fov: 31, view: view });
+      stage.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.25 : 1.5));
+      if (small) stage.renderer.shadowMap.enabled = false;
+      stage.hold = { y: 0 };
+      stage.addCeiling();
+      stage.visible = true;
+
+      var plate = function (kind, top, bottom) {
+        return stage.addPair(function (isNear) { return makePlate(kind, isNear ? top : "GYMHUB", isNear ? bottom : ""); });
+      };
+      var gym = [plate("black", "YOUR GYM", "solid"), plate("black", "YOUR GYM", "solid")];
+      var results = [
+        plate("red", "+$550K", "revenue / yr"),
+        plate("blue", "+309", "members"),
+        plate("yellow", "202", "leads"),
+        plate("green", "+70%", "profit")
+      ];
+      stage.definePlan("gym", gym);
+      stage.definePlan("results", gym.concat(results));
+      stage.definePlan("finale", [
+        plate("red", "SALES", "loaded"), plate("blue", "RETAIN", "loaded"), plate("yellow", "LEADS", "loaded"),
+        plate("green", "TEAM", "loaded"), plate("white", "SYSTEMS", "loaded"),
+        stage.addPair(function () { return makeCollar(); })
+      ]);
+      stage.items.forEach(function (it) { it.dur = 0.8; });
+
+      /* Calculator plans: real competition loading per side, then two red plates for +$100K. */
+      var KG = [[25, "red"], [20, "blue"], [15, "yellow"], [10, "green"], [5, "white"], [2.5, "change"]];
+      var calcItems = [];
+      stage.loadCalc = function (sideKg) {
+        var list = [], left = Math.floor(sideKg / 2.5) * 2.5, room = SLEEVE_END - SLEEVE_START - 0.11 - 0.06;
+        KG.forEach(function (k) { while (left >= k[0]) { list.push(k); left -= k[0]; } });
+        var used = 0, shown = [];
+        list.forEach(function (k) { var t = PLATES[k[1]].t + 0.003; if (used + t <= room) { shown.push(k); used += t; } });
+        var old = calcItems;
+        calcItems = shown.map(function (k) { return plate(k[1], k[0] + " KG", "your gym"); })
+          .concat([plate("red", "+$50K", "the goal"), plate("red", "+$50K", "the goal")]);
+        calcItems.forEach(function (it) { it.dur = 0.7; });
+        stage.definePlan("calc", calcItems);
+        stage.planId = null;
+        stage.showPlan("calc", shown.length);
+        setTimeout(function () { if (stage.planId === "calc") { stage.planN = -1; stage.showPlan("calc", calcItems.length); } }, reduceMotion ? 0 : 650);
+        setTimeout(function () { stage.dropItems(old); }, 1400);
+        return { shown: shown.length, total: list.length };
+      };
+
+      stage.showPlan("gym");
+      api.stage = stage;
     }
 
     var sysCanvas = document.getElementById("system-bar");

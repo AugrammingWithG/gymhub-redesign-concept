@@ -21,6 +21,7 @@
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
+  <canvas class="stage" id="stage" aria-hidden="true"></canvas>
 
   <header class="nav" id="nav">
     <div class="nav__inner">
@@ -39,16 +40,21 @@
         <a class="btn btn--red btn--sm" href="https://calendly.com/stevegrant270/90day-growth-plan-with-steve" target="_blank" rel="noopener">Book a call</a>
       </div>
     </div>
+    <div class="progress" aria-hidden="true">
+      <span class="progress__fill"></span>
+      <span class="progress__plates">
+        <i data-plate="black"></i><i data-plate="white"></i><i data-plate="red"></i><i data-plate="blue"></i><i data-plate="yellow"></i><i data-plate="green"></i><i data-plate="collar"></i>
+      </span>
+    </div>
   </header>
 
   <main id="main">
 
-    <!-- HERO -->
-    <section class="hero" id="top" aria-labelledby="hero-title">
+    <!-- 0 THE CEILING -->
+    <section class="hero chapter" id="top" data-chapter="0" aria-labelledby="hero-title">
       <div class="hero__top">
-      <canvas class="hero__canvas" id="hero-bar" aria-hidden="true"></canvas>
       <div class="hero__copy wrap">
-        <h1 id="hero-title" class="display">Built a solid gym<span class="dash"> — </span><br class="br-wide">but feel like you’ve hit a&nbsp;ceiling?</h1>
+        <h1 id="hero-title" class="display">Built a solid gym<span class="dash"> — </span><br class="br-wide">but feel like you’ve <span class="ceiling-word">hit a&nbsp;ceiling?</span></h1>
         <p class="hero__lede">Steve Grant helps gym owners add <strong>$100K in sales</strong> and build the team and systems to <strong>take Fridays off.</strong></p>
         <div class="hero__actions">
           <a class="btn btn--red btn--lg" href="https://calendly.com/stevegrant270/90day-growth-plan-with-steve" target="_blank" rel="noopener">
@@ -58,48 +64,58 @@
           <a class="link-quiet" href="#results">See the results</a>
         </div>
         <p class="hero__fine">Free Zoom call with Steve. You leave with a 3-step, 90-day plan for your gym.</p>
+        <div class="lift-try">
+          <button class="lift-btn" type="button" data-lift="slam" aria-describedby="lift-msg-0">
+            <span class="lift-btn__ring" aria-hidden="true"></span>
+            <span class="lift-btn__label">Hold to lift your gym</span>
+          </button>
+          <p class="lift-msg" id="lift-msg-0" aria-live="polite">Press and hold. See where your gym tops out.</p>
+        </div>
       </div>
-      </div>
-
-      <div class="legend wrap" aria-labelledby="legend-title">
-        <p class="legend__title stamp" id="legend-title">On the bar: real GymHub owners</p>
-        <ul class="legend__list">
-          <li class="legend__item" data-plate="red"><span class="chip" aria-hidden="true"></span><p><b>+$550K</b> revenue a year <span>Dev &amp; Jody Krishna, Empowa Women’s Fitness Centre</span></p></li>
-          <li class="legend__item" data-plate="blue"><span class="chip" aria-hidden="true"></span><p><b>+309</b> members in 12 weeks <span>Mark Patience, Kingdom Gym</span></p></li>
-          <li class="legend__item" data-plate="yellow"><span class="chip" aria-hidden="true"></span><p><b>202</b> leads in 14 days, $0 ads <span>Josh &amp; Rachael Pole, Infuse Health</span></p></li>
-          <li class="legend__item" data-plate="green"><span class="chip" aria-hidden="true"></span><p><b>+70%</b> profit in 12 months <span>Simon McDonald, Vision PT Five Dock</span></p></li>
-        </ul>
       </div>
       <aside class="note" data-n="1"><b>Fix: one clear heading and one action.</b> The old page had 5 H1s and its real headline was injected by script. Now the headline is the H1 and every button books the same call.</aside>
     </section>
 
     <!-- CEILING -->
-    <section class="ceiling" id="ceiling" aria-labelledby="ceiling-title">
-      <div class="wrap">
+    <section class="ceiling chapter" id="ceiling" data-chapter="1" aria-labelledby="ceiling-title">
+      <div class="pin"><div class="wrap ceiling__inner">
         <h2 id="ceiling-title" class="sr-only">The problem, the solution and the reward</h2>
         <ol class="lift">
-          <li class="lift__row">
+          <li class="lift__row" data-reveal>
             <p class="lift__word display">Problem</p>
             <p class="lift__text">You know how there are more and more gyms popping up everywhere? It’s genuinely much harder now to find new members, so gym owners are working crazy hours each week just to make ends meet.</p>
           </li>
-          <li class="lift__row">
+          <li class="lift__row" data-reveal>
             <p class="lift__word display">Solution</p>
             <p class="lift__text">I created a step-by-step online coaching program that teaches you how to fill your gym the easy way, so you can start taking Fridays off.</p>
           </li>
-          <li class="lift__row lift__row--reward">
+          <li class="lift__row lift__row--reward" data-reveal>
             <p class="lift__word display">Reward</p>
             <p class="lift__text">So you can help more people, increase your business profit and finally take that holiday you’ve been promising yourself.</p>
           </li>
         </ol>
         <p class="lift__sign">Steve Grant, GymHub director</p>
-      </div>
+      </div></div>
     </section>
 
     <!-- RESULTS -->
-    <section class="results" id="results" aria-labelledby="results-title">
+    <section class="onbar chapter" id="results" data-chapter="2" aria-labelledby="results-title">
+      <div class="pin"><div class="wrap onbar__inner">
+        <h2 id="results-title" class="display h2" data-reveal>Owners who added the weight.</h2>
+        <p class="onbar__intro">Four real GymHub owners. Each plate is what they added.</p>
+        <ol class="onbar__list">
+          <li class="onbar__item" data-plate="red"><span class="chip" aria-hidden="true"></span><p><b>+$550K</b> revenue a year <span>Dev &amp; Jody Krishna, Empowa Women’s Fitness Centre</span></p></li>
+          <li class="onbar__item" data-plate="blue"><span class="chip" aria-hidden="true"></span><p><b>+309</b> members in 12 weeks <span>Mark Patience, Kingdom Gym</span></p></li>
+          <li class="onbar__item" data-plate="yellow"><span class="chip" aria-hidden="true"></span><p><b>202</b> leads in 14 days, $0 ads <span>Josh &amp; Rachael Pole, Infuse Health</span></p></li>
+          <li class="onbar__item" data-plate="green"><span class="chip" aria-hidden="true"></span><p><b>+70%</b> profit in 12 months <span>Simon McDonald, Vision PT Five Dock</span></p></li>
+        </ol>
+      </div></div>
+    </section>
+
+    <section class="results" id="rack-section" aria-labelledby="rack-title">
       <div class="wrap">
         <div class="results__head">
-          <h2 id="results-title" class="display h2">Owners who added the weight.</h2>
+          <h2 id="rack-title" class="display h2" data-reveal>The whole rack.</h2>
           <p class="results__intro">Every plate is a real GymHub client: the owner, the gym, the number and how long it took. Coloured the way a competition bar is loaded.</p>
         </div>
 
@@ -219,14 +235,14 @@
     </section>
 
     <!-- STEVE -->
-    <section class="steve" id="steve" aria-labelledby="steve-title">
+    <section class="steve chapter" id="steve" data-chapter="3" aria-labelledby="steve-title">
       <div class="wrap steve__grid">
         <figure class="steve__photo">
           <img src="assets/img/steve-presenting.webp" alt="Steve Grant, in a black T-shirt, coaching a room of gym owners at a GymHub workshop" width="960" height="1200" loading="lazy">
           <figcaption class="stamp">Steve Grant · Director, GymHub</figcaption>
         </figure>
         <div class="steve__copy">
-          <h2 id="steve-title" class="display h2">Steve has lifted this himself.</h2>
+          <h2 id="steve-title" class="display h2" data-reveal>Steve has lifted this himself.</h2>
           <p class="steve__lede">Steve started as a personal trainer 23 years ago while finishing a Bachelor of Physical Education and playing professional rugby league for the Cronulla Sharks. He has since built two gyms past $1 million in turnover, and coaches owners with the same systems he runs in his own.</p>
           <dl class="record">
             <div><dt>Northern Beaches studio</dt><dd>12 trainers, $1.1M average turnover, run for 8 years</dd></div>
@@ -260,8 +276,31 @@
       <aside class="note" data-n="3"><b>Fix: Steve leads.</b> Coaching sells on trust in one person. His record moves up from a short bio and a "Learn more" link, and every photo now has a real description (48 of 53 had none).</aside>
     </section>
 
+    <!-- 4 LOAD YOUR BAR -->
+    <section class="yourbar chapter" id="your-bar" data-chapter="4" aria-labelledby="yourbar-title">
+      <div class="wrap yourbar__inner">
+        <h2 id="yourbar-title" class="display h2" data-reveal>Load your bar.</h2>
+        <p class="yourbar__lede">Your gym’s yearly revenue as weight: every $1K a year is 1 kg on the bar. Then add GymHub’s +$100K goal.</p>
+        <form class="calc" id="calc" novalidate>
+          <div class="field"><label for="calc-members">Active members</label><input id="calc-members" name="members" type="number" inputmode="numeric" min="1" max="20000" step="1" value="200" required></div>
+          <div class="field"><label for="calc-price">Average membership, $ a month</label><input id="calc-price" name="price" type="number" inputmode="decimal" min="1" max="2000" step="1" value="60" required></div>
+          <p class="form-error" id="calc-error" role="alert" hidden></p>
+        </form>
+        <div class="score" aria-live="polite">
+          <p class="score__cell"><span class="stamp">Your bar now</span><b id="calc-now">144 kg</b><span id="calc-now-rev">$144K a year</span></p>
+          <svg class="score__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          <p class="score__cell score__cell--goal"><span class="stamp">With +$100K</span><b id="calc-goal">244 kg</b><span id="calc-goal-rev">$244K a year</span></p>
+        </div>
+        <p class="calc__what" id="calc-what">+100 kg is two red plates a side. At $60 a month that’s about <b>139 more members</b>, or the same revenue from pricing, retention and PT.</p>
+        <div class="calc__plates" id="calc-plates" aria-hidden="true"></div>
+        <p class="fine">Maths, not a promise. Your real plan comes out of the free call.</p>
+        <a class="btn btn--red" href="https://calendly.com/stevegrant270/90day-growth-plan-with-steve" target="_blank" rel="noopener">Book a call to plan your 90 days <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <aside class="note" data-n="8"><b>New: the visitor becomes the lifter.</b> Their own members and price load the bar, so the +$100K promise turns into a number for their gym, ending at the booking button.</aside>
+    </section>
+
     <!-- SYSTEM -->
-    <section class="system" id="system" aria-labelledby="system-title">
+    <section class="system chapter" id="system" data-chapter="5" aria-labelledby="system-title">
       <div class="wrap system__head">
         <h2 id="system-title" class="display h2">The Rocket System. Six steps to load the bar.</h2>
         <p>The same order Steve used in his own gyms. Each step adds a plate; the last one locks it in.</p>
@@ -425,17 +464,24 @@
       </div>
     </section>
 
-    <!-- CLOSE -->
-    <section class="close" aria-labelledby="close-title">
+    <!-- 6 THE LIFT -->
+    <section class="close chapter" id="lift" data-chapter="6" aria-labelledby="close-title">
       <div class="wrap close__inner">
-        <h2 id="close-title" class="display">Break through the ceiling.</h2>
-        <p>One call. A 90-day plan. No pitch.</p>
-        <a class="btn btn--chalk btn--lg" href="https://calendly.com/stevegrant270/90day-growth-plan-with-steve" target="_blank" rel="noopener">
+        <h2 id="close-title" class="display" data-reveal>Break through the ceiling.</h2>
+        <p class="close__lede">One call. A 90-day plan. No pitch.</p>
+        <div class="lift-try">
+          <button class="lift-btn" type="button" data-lift="clear" aria-describedby="lift-msg-6">
+            <span class="lift-btn__ring" aria-hidden="true"></span>
+            <span class="lift-btn__label">Hold to lift</span>
+          </button>
+          <p class="lift-msg" id="lift-msg-6" aria-live="polite">The ceiling’s gone. Hold to lift.</p>
+        </div>
+        <a class="btn btn--red btn--lg close__cta" href="https://calendly.com/stevegrant270/90day-growth-plan-with-steve" target="_blank" rel="noopener">
           Book your free growth plan
           <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
       </div>
-      <aside class="note" data-n="7"><b>Fix: speed.</b> The old homepage took 8–10 seconds to load (Blog: about 20). This page loads one small stylesheet, one font file and images at their display size, and the 3D only renders while it’s on screen.</aside>
+      <aside class="note" data-n="7"><b>Fix: speed.</b> The old homepage took 8–10 seconds to load (Blog: about 20). This page loads one small stylesheet, one font file and images at their display size, and renders a single 3D stage only while it’s on screen.</aside>
     </section>
   </main>
 
@@ -478,6 +524,8 @@
 
   <script src="assets/vendor/three.min.js" defer></script>
   <script src="assets/js/barbell.js" defer></script>
+  <script src="assets/vendor/lenis.min.js" defer></script>
+  <script src="assets/js/story.js" defer></script>
   <script src="assets/js/site.js" defer></script>
 </body>
 </html>
