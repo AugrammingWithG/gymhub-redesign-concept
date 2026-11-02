@@ -112,6 +112,10 @@
     wallA.position.set(5.9, 0.8, 0); wallA.rotation.y = -Math.PI / 2; room.add(wallA);
     var wallB = new T.Mesh(new T.PlaneGeometry(5, 2), new T.MeshBasicMaterial({ color: 0x8a9096 }));
     wallB.position.set(0, 0.6, 5.9); wallB.rotation.y = Math.PI; room.add(wallB);
+    var wallC = new T.Mesh(new T.PlaneGeometry(8, 2.6), panel);
+    wallC.position.set(0, 0.9, -5.9); room.add(wallC);
+    var wallD = new T.Mesh(new T.PlaneGeometry(6, 2.2), new T.MeshBasicMaterial({ color: 0x9aa0a6 }));
+    wallD.position.set(-5.9, 0.8, 0); wallD.rotation.y = Math.PI / 2; room.add(wallD);
     var pm = new T.PMREMGenerator(renderer);
     var env = pm.fromScene(room, 0.03).texture;
     pm.dispose();
@@ -124,12 +128,12 @@
     if (shared) return shared;
     shared = {
       knurl: knurlTexture(),
-      chrome: new T.MeshStandardMaterial({ color: 0xf2f4f5, metalness: 1, roughness: 0.18 }),
+      chrome: new T.MeshStandardMaterial({ color: 0xf2f4f5, metalness: 1, roughness: 0.26, side: T.DoubleSide }),
       steel: new T.MeshStandardMaterial({ color: 0xb4bbbf, metalness: 1, roughness: 0.3 }),
       dark: new T.MeshStandardMaterial({ color: 0x1c1e20, metalness: 0.4, roughness: 0.5 })
     };
     shared.shaft = new T.MeshStandardMaterial({
-      color: 0xbcc3c7, metalness: 1, roughness: 0.42, bumpMap: shared.knurl, bumpScale: 0.9
+      color: 0xbcc3c7, metalness: 1, roughness: 0.42, bumpMap: shared.knurl, bumpScale: 2.2
     });
     return shared;
   }
@@ -384,7 +388,7 @@
         frame: function (a, w) {
           if (w < 700) return { fov: 25, pos: [2.5, 0.5, 0.42], look: [0.72, 0.27, 0], offsetX: -0.12, offsetY: 0.02 };
           if (a < 1.3) return { fov: 30, pos: [1.9, 0.36, 1.9], look: [0.0, 0.42, 0], offsetX: 0.08, offsetY: -0.13 };
-          return { fov: 27, pos: [1.85, 0.3, 1.95], look: [-0.05, 0.42, 0], offsetX: 0.1, offsetY: -0.13 };
+          return { fov: 31, pos: [1.85, 0.3, 1.95], look: [-0.05, 0.42, 0], offsetX: 0.12, offsetY: -0.165 };
         }
       });
       [

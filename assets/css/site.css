@@ -161,9 +161,9 @@ h1, h2, h3 { margin: 0; }
   overflow: hidden;
   isolation: isolate;
 }
-.hero__top { position: relative; min-height: max(640px, calc(100svh - var(--nav-h))); display: grid; grid-template-rows: auto 1fr; }
+.hero__top { position: relative; min-height: max(560px, calc(100svh - var(--nav-h) - 132px)); display: grid; grid-template-rows: auto 1fr; }
 .hero__canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
-.hero__copy { grid-row: 1; padding-block: clamp(28px, 6vh, 72px) 0; }
+.hero__copy { grid-row: 1; padding-block: clamp(20px, 4vh, 52px) 0; }
 .hero__copy > * { max-width: min(46rem, 52vw); }
 .hero h1 { font-size: clamp(2.6rem, 3.6vw + .7rem, 4.75rem); }
 .hero h1 .dash { color: var(--red); }
@@ -172,7 +172,7 @@ h1, h2, h3 { margin: 0; }
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; margin-top: 2rem; }
 .hero__fine { margin-top: .9rem; font-size: .92rem; color: var(--chalk-dim); }
 
-.legend { position: relative; padding-block: 8px 40px; }
+.legend { position: relative; padding-block: 0 40px; }
 .legend__title { padding-top: 18px; margin-bottom: 12px; background: url("../img/knurl.svg") repeat-x top / 10px 4px; }
 .legend__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 28px; }
 .legend__item { display: flex; gap: 10px; align-items: flex-start; font-size: .95rem; color: var(--chalk-dim); line-height: 1.4; }

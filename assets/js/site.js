@@ -38,19 +38,23 @@
     if (readout) readout.firstChild.textContent = n === 6 ? "Locked in: " : "Bar loaded: ";
     if (window.GymBar && window.GymBar.system) window.GymBar.system.setLoaded(n);
   }
-  if (steps.length && "IntersectionObserver" in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) setStep(Number(e.target.dataset.step));
-      });
-    }, { rootMargin: window.matchMedia("(max-width: 820px)").matches ? "-72% 0px -26% 0px" : "-48% 0px -48% 0px" });
-    steps.forEach(function (s) { io.observe(s); });
-    var stage = document.querySelector(".system__stage");
+  /* the last step whose top has passed the trigger line is the active one,
+     so jumps and anchor links land on the right load, not just smooth scrolls */
+  var narrow = window.matchMedia("(max-width: 820px)");
+  var queued = false;
+  function syncStep() {
+    queued = false;
+    var line = window.innerHeight * (narrow.matches ? 0.74 : 0.55);
+    var n = 0;
+    steps.forEach(function (s, i) { if (s.getBoundingClientRect().top < line) n = i + 1; });
+    setStep(n);
+  }
+  if (steps.length) {
     window.addEventListener("scroll", function () {
-      if (!stage) return;
-      var r = stage.getBoundingClientRect();
-      if (r.top > window.innerHeight * 0.5) setStep(0);
+      if (!queued) { queued = true; requestAnimationFrame(syncStep); }
     }, { passive: true });
+    window.addEventListener("resize", syncStep);
+    syncStep();
   }
   document.addEventListener("gymbar:ready", function () {
     if (loaded > 0 && window.GymBar.system) window.GymBar.system.setLoaded(loaded);
