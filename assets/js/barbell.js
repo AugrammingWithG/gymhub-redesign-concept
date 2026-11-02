@@ -378,13 +378,14 @@
 
   /* A steel beam above the bar: the ceiling. */
   BarScene.prototype.addCeiling = function () {
-    var s = getShared();
+    var steel = new T.MeshStandardMaterial({ color: 0x5d6368, metalness: 0.65, roughness: 0.5 });
     var beam = new T.Group();
-    beam.add(cyl(0.022, 1.24, s.chrome, 0));
-    [-0.62, 0.62].forEach(function (x) { // bolted pin collars where the bar strikes
-      var c = cyl(0.03, 0.05, s.chrome, x); c.rotation.z = 0; c.rotation.x = Math.PI / 2; c.position.y = -0.005;
-      beam.add(c);
+    [[0.012, 0.006], [0.012, 0.094]].forEach(function (f) { // bottom and top flanges
+      var m = new T.Mesh(new T.BoxGeometry(7, f[0], 0.11), steel);
+      m.position.y = f[1]; m.castShadow = true; beam.add(m);
     });
+    var web = new T.Mesh(new T.BoxGeometry(7, 0.08, 0.014), steel);
+    web.position.y = 0.05; web.castShadow = true; beam.add(web);
     this.scene.add(beam);
     this.beam = beam;
     return beam;
@@ -535,7 +536,7 @@
         list.forEach(function (k) { var t = PLATES[k[1]].t + 0.003; if (used + t <= room) { shown.push(k); used += t; } });
         var old = calcItems;
         calcItems = shown.map(function (k) { return plate(k[1], k[0] + " KG", "your gym"); })
-          .concat([plate("red", "+$50K", "the goal"), plate("red", "+$50K", "the goal")]);
+          .concat([plate("red", "+$25K", "the goal"), plate("red", "+$25K", "the goal")]);
         calcItems.forEach(function (it) { it.dur = 0.7; });
         stage.definePlan("calc", calcItems);
         stage.planId = null;

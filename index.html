@@ -28,6 +28,10 @@
       <a class="nav__brand" href="#top" aria-label="GymHub home">
         <img src="assets/img/gymhub-logo.svg" alt="GymHub" width="128" height="33">
       </a>
+      <span class="minibar" aria-hidden="true">
+        <i class="minibar__bar"></i>
+        <span class="minibar__plates"><i data-plate="black"></i><i data-plate="white"></i><i data-plate="red"></i><i data-plate="blue"></i><i data-plate="yellow"></i><i data-plate="green"></i><i data-plate="collar"></i></span>
+      </span>
       <nav class="nav__links" aria-label="Main">
         <a href="#results">Results</a>
         <a href="#steve">Steve</a>
@@ -39,12 +43,6 @@
         <a class="nav__login" href="https://gym-hub.mykajabi.com/login">Members login</a>
         <a class="btn btn--red btn--sm" href="https://calendly.com/stevegrant270/90day-growth-plan-with-steve" target="_blank" rel="noopener">Book a call</a>
       </div>
-    </div>
-    <div class="progress" aria-hidden="true">
-      <span class="progress__fill"></span>
-      <span class="progress__plates">
-        <i data-plate="black"></i><i data-plate="white"></i><i data-plate="red"></i><i data-plate="blue"></i><i data-plate="yellow"></i><i data-plate="green"></i><i data-plate="collar"></i>
-      </span>
     </div>
   </header>
 
@@ -280,16 +278,16 @@
     <section class="yourbar chapter" id="your-bar" data-chapter="4" aria-labelledby="yourbar-title">
       <div class="wrap yourbar__inner">
         <h2 id="yourbar-title" class="display h2" data-reveal>Load your bar.</h2>
-        <p class="yourbar__lede">Your gym’s yearly revenue as weight: every $1K a year is 1 kg on the bar. Then add GymHub’s +$100K goal.</p>
+        <p class="yourbar__lede">Your gym’s yearly revenue as plates: every $1K a year is 1 kg loaded on the bar. Then add GymHub’s +$100K goal.</p>
         <form class="calc" id="calc" novalidate>
           <div class="field"><label for="calc-members">Active members</label><input id="calc-members" name="members" type="number" inputmode="numeric" min="1" max="20000" step="1" value="200" required></div>
           <div class="field"><label for="calc-price">Average membership, $ a month</label><input id="calc-price" name="price" type="number" inputmode="decimal" min="1" max="2000" step="1" value="60" required></div>
           <p class="form-error" id="calc-error" role="alert" hidden></p>
         </form>
         <div class="score" aria-live="polite">
-          <p class="score__cell"><span class="stamp">Your bar now</span><b id="calc-now">144 kg</b><span id="calc-now-rev">$144K a year</span></p>
+          <p class="score__cell"><span class="stamp">Plates now</span><b id="calc-now">144 kg</b><span id="calc-now-rev">$144K a year</span></p>
           <svg class="score__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          <p class="score__cell score__cell--goal"><span class="stamp">With +$100K</span><b id="calc-goal">244 kg</b><span id="calc-goal-rev">$244K a year</span></p>
+          <p class="score__cell score__cell--goal"><span class="stamp">Plates with +$100K</span><b id="calc-goal">244 kg</b><span id="calc-goal-rev">$244K a year</span></p>
         </div>
         <p class="calc__what" id="calc-what">+100 kg is two red plates a side. At $60 a month that’s about <b>139 more members</b>, or the same revenue from pricing, retention and PT.</p>
         <div class="calc__plates" id="calc-plates" aria-hidden="true"></div>

@@ -47,9 +47,9 @@
     return { d: Object.assign({}, rest, d), m: Object.assign({}, rest, m) };
   }
   var K = {
-    hero: key({ pos: [1.85, 0.3, 1.95], look: [-0.05, 0.42, 0], fov: 31, ox: 0.02, oy: -0.24 },
-              { pos: [2.5, 0.5, 0.42], look: [0.72, 0.27, 0], fov: 58, ox: -0.06, oy: -0.41 },
-              { lift: 0, beamY: 0.55, warm: 0, op: 1, follow: 0 }),
+    hero: key({ pos: [1.85, 0.36, 1.95], look: [-0.05, 0.4, 0], fov: 31, ox: 0.0, oy: -0.31 },
+              { pos: [2.6, 0.55, 0.62], look: [0.55, 0.3, 0], fov: 72, ox: 0, oy: -0.36 },
+              { lift: 0, beamY: 0.5, warm: 0, op: 1, follow: 0 }),
     stuck: key({ pos: [2.45, 0.5, 0.9], look: [0.32, 0.42, 0], fov: 34, ox: -0.2, oy: -0.02 },
                { pos: [2.3, 0.6, 1.0], look: [0.4, 0.4, 0], fov: 52, ox: 0, oy: 0.24 },
                { lift: 0, beamY: 0.55, warm: 0, op: 1, follow: 0 }),
@@ -59,15 +59,15 @@
     risen: key({ pos: [2.45, 0.55, 0.9], look: [0.32, 0.5, 0], fov: 34, ox: -0.2, oy: -0.02 },
                { pos: [2.3, 0.65, 1.0], look: [0.4, 0.5, 0], fov: 54, ox: 0, oy: 0.2 },
                { lift: 0.42, beamY: 2.8, warm: 1, op: 1, follow: 0 }),
-    onbar: key({ pos: [2.3, 0.5, 0.72], look: [0.62, 0.3, 0], fov: 30, ox: -0.2, oy: 0 },
+    onbar: key({ pos: [2.35, 0.5, 0.5], look: [0.66, 0.3, 0], fov: 30, ox: -0.24, oy: 0 },
                { pos: [2.1, 0.62, 0.75], look: [0.72, 0.3, 0], fov: 50, ox: 0, oy: 0.35 },
                { lift: 0, beamY: 2.8, warm: 0.3, op: 1, follow: 0 }),
     yours: key({ pos: [2.6, 0.55, 0.7], look: [0.55, 0.32, 0], fov: 36, ox: -0.25, oy: 0 },
                { pos: [2.2, 0.6, 1.1], look: [0.5, 0.32, 0], fov: 50, ox: 0, oy: 0.3 },
                { lift: 0, beamY: 2.8, warm: 0.3, op: 1, follow: 0 }),
-    lift: key({ pos: [2.3, 0.45, 1.05], look: [0.3, 0.45, 0], fov: 36, ox: -0.18, oy: -0.04 },
+    lift: key({ pos: [2.3, 0.6, 1.05], look: [0.3, 0.62, 0], fov: 42, ox: -0.18, oy: -0.02 },
               { pos: [2.2, 0.55, 1.4], look: [0.3, 0.45, 0], fov: 54, ox: 0, oy: 0.26 },
-              { lift: 0, beamY: 2.8, warm: 0.6, op: 1, follow: 0.45 })
+              { lift: 0, beamY: 2.8, warm: 0.6, op: 1, follow: 0.12 })
   };
   function hidden(k) { return { d: Object.assign({}, k.d, { op: 0 }), m: Object.assign({}, k.m, { op: 0 }) }; }
   /* without pinning the problem/solution/reward rows run full width, so the stage sits that scene out */
@@ -136,16 +136,10 @@
   var rows = Array.prototype.slice.call(document.querySelectorAll(".lift__row"));
   var bars = Array.prototype.slice.call(document.querySelectorAll(".onbar__item"));
   var chapters = Array.prototype.slice.call(document.querySelectorAll(".chapter"));
-  var progressPlates = Array.prototype.slice.call(document.querySelectorAll(".progress__plates i"));
-  var progress = document.querySelector(".progress");
+  var progressPlates = Array.prototype.slice.call(document.querySelectorAll(".minibar__plates i"));
   var calcDirty = true;
 
-  function placeProgress() {
-    var max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    chapters.forEach(function (ch, i) {
-      if (progressPlates[i]) progressPlates[i].style.left = Math.min(98, (Math.max(0, top(ch) - 80) / max) * 100) + "%";
-    });
-  }
+  function placeProgress() {}
 
   function activate(list, n) { list.forEach(function (el, i) { el.classList.toggle("is-active", i === n); }); }
 
@@ -163,8 +157,7 @@
     activate(bars, beats - 1);
     bars.forEach(function (el, i) { el.classList.toggle("is-loaded", i < beats); });
 
-    var max = Math.max(1, document.documentElement.scrollHeight - vh);
-    if (progress) progress.style.setProperty("--p", Math.min(1, yPos / max));
+    if (nav) nav.classList.toggle("is-solid", yPos > 24);
     chapters.forEach(function (ch, i) {
       if (progressPlates[i]) progressPlates[i].classList.toggle("on", yPos + vh * 0.5 >= top(ch));
     });
@@ -196,7 +189,7 @@
     var holding = false, p = 0, state = "idle", last = 0, held = false;
     var word = document.querySelector(".ceiling-word");
 
-    function contact() { return stage.view.beamY - 0.03 - 0.014 - window.GymBarKit.R - stage.view.lift; }
+    function contact() { return stage.view.beamY - 0.014 - window.GymBarKit.R - stage.view.lift; }
     function set(y) { stage.hold.y = y; stage.request(); }
     function animate(from, to, dur, ease, done) {
       var t0 = performance.now();
@@ -217,7 +210,7 @@
       state = "slam";
       if (!reduce) {
         stage.shake = 1.8;
-        stage.burst(0.45, stage.view.beamY - 0.04, 0, 0.8); stage.burst(-0.45, stage.view.beamY - 0.04, 0, 0.8);
+        stage.burst(0.45, stage.view.beamY, 0, 0.8); stage.burst(-0.45, stage.view.beamY, 0, 0.8);
       }
       if (word) { word.classList.remove("is-hit"); void word.offsetWidth; word.classList.add("is-hit"); }
       msg.textContent = "That’s your ceiling. Scroll down to see how owners broke through.";
@@ -226,8 +219,8 @@
     }
     function success() {
       state = "up";
-      animate(stage.hold.y, 1.15, 650, function (k) { return 1 - Math.pow(1 - k, 3); }, function () {
-        if (!reduce) { stage.burst(0.8, 1.35, 0, 1); stage.burst(-0.8, 1.35, 0, 1); stage.shake = 0.5; }
+      animate(stage.hold.y, 0.95, 650, function (k) { return 1 - Math.pow(1 - k, 3); }, function () {
+        if (!reduce) { stage.burst(0.8, 1.15, 0, 1); stage.burst(-0.8, 1.15, 0, 1); stage.shake = 0.5; }
       });
       msg.textContent = "Lifted. Now plan yours on a free call with Steve.";
       label.textContent = "Lift again";
