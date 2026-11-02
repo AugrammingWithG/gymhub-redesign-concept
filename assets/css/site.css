@@ -420,6 +420,7 @@ h1, h2, h3 { margin: 0; }
 
 /* ---------- redesign notes (pitch layer) ---------- */
 .notes-toggle {
+  transition: opacity .3s var(--ease-out);
   position: fixed; right: 16px; bottom: 16px; z-index: 60;
   display: inline-flex; align-items: center; gap: 10px;
   padding: .65rem 1rem; border-radius: 999px; border: 0; cursor: pointer;
@@ -615,6 +616,8 @@ main, .foot { position: relative; z-index: 1; }
   .close { align-items: flex-end; padding-top: 46vh; }
   .close__inner { background: linear-gradient(180deg, rgba(20, 21, 22, 0), rgba(20, 21, 22, .9) 14%); padding-block: 32px 8px; }
   .calc { grid-template-columns: 1fr; }
+  .score { align-items: flex-end; }
+  .at-close .notes-toggle { opacity: 0; pointer-events: none; }
   .minibar { width: 72px; margin-left: -6px; }
 }
 

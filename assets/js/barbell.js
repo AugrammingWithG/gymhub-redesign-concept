@@ -377,8 +377,33 @@
   };
 
   /* A steel beam above the bar: the ceiling. */
+  function brushedTexture() { // horizontal grain for rolled steel
+    var c = document.createElement("canvas");
+    c.width = 1024; c.height = 64;
+    var g = c.getContext("2d");
+    g.fillStyle = "#8a8f94"; g.fillRect(0, 0, 1024, 64);
+    for (var i = 0; i < 900; i++) {
+      var y = Math.random() * 64, l = 40 + Math.random() * 400, x = Math.random() * 1024;
+      g.strokeStyle = Math.random() < 0.5 ? "rgba(30,32,35," + (0.02 + Math.random() * 0.05) + ")" : "rgba(220,224,228," + (0.02 + Math.random() * 0.05) + ")";
+      g.lineWidth = 0.6 + Math.random() * 1.2;
+      g.beginPath(); g.moveTo(x, y); g.lineTo(x + l, y + (Math.random() - 0.5) * 0.8); g.stroke();
+    }
+    for (var k = 0; k < 6; k++) { // faint mill-scale blotches
+      g.fillStyle = "rgba(40,42,46," + (0.04 + Math.random() * 0.05) + ")";
+      g.beginPath(); g.ellipse(Math.random() * 1024, Math.random() * 64, 60 + Math.random() * 120, 6 + Math.random() * 10, 0, 0, Math.PI * 2); g.fill();
+    }
+    var t = new T.CanvasTexture(c);
+    t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.repeat.set(2, 1);
+    t.encoding = T.sRGBEncoding;
+    t.anisotropy = 8;
+    return t;
+  }
+
   BarScene.prototype.addCeiling = function () {
-    var steel = new T.MeshStandardMaterial({ color: 0x5d6368, metalness: 0.65, roughness: 0.5 });
+    var grain = brushedTexture();
+    var steel = new T.MeshStandardMaterial({ color: 0x9ea4a9, map: grain, metalness: 0.8, roughness: 0.38, envMapIntensity: 1.15 });
+    var bolt = getShared().steel;
     var beam = new T.Group();
     [[0.012, 0.006], [0.012, 0.094]].forEach(function (f) { // bottom and top flanges
       var m = new T.Mesh(new T.BoxGeometry(7, f[0], 0.11), steel);
@@ -386,6 +411,17 @@
     });
     var web = new T.Mesh(new T.BoxGeometry(7, 0.08, 0.014), steel);
     web.position.y = 0.05; web.castShadow = true; beam.add(web);
+    var plateMat = new T.MeshStandardMaterial({ color: 0x6f757a, metalness: 0.7, roughness: 0.5 });
+    [-1.9, -0.7, 0.7, 1.9].forEach(function (x) { // bolted splice plates on both faces of the web
+      [-1, 1].forEach(function (side) {
+        var sp = new T.Mesh(new T.BoxGeometry(0.17, 0.066, 0.008), plateMat);
+        sp.position.set(x, 0.05, side * 0.011); beam.add(sp);
+        [[-0.055, 0.025], [0.055, 0.025], [-0.055, -0.025], [0.055, -0.025]].forEach(function (b) {
+          var head = new T.Mesh(new T.CylinderGeometry(0.008, 0.008, 0.008, 6), bolt);
+          head.rotation.x = Math.PI / 2; head.position.set(x + b[0], 0.05 + b[1], side * 0.019); beam.add(head);
+        });
+      });
+    });
     this.scene.add(beam);
     this.beam = beam;
     return beam;

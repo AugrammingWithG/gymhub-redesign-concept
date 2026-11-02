@@ -65,7 +65,7 @@
     yours: key({ pos: [2.6, 0.55, 0.7], look: [0.55, 0.32, 0], fov: 36, ox: -0.25, oy: 0 },
                { pos: [2.2, 0.6, 1.1], look: [0.5, 0.32, 0], fov: 50, ox: 0, oy: 0.3 },
                { lift: 0, beamY: 2.8, warm: 0.3, op: 1, follow: 0 }),
-    lift: key({ pos: [2.3, 0.6, 1.05], look: [0.3, 0.62, 0], fov: 42, ox: -0.18, oy: -0.02 },
+    lift: key({ pos: [2.3, 0.6, 1.05], look: [0.3, 0.62, 0], fov: 44, ox: -0.18, oy: -0.12 },
               { pos: [2.2, 0.55, 1.4], look: [0.3, 0.45, 0], fov: 54, ox: 0, oy: 0.26 },
               { lift: 0, beamY: 2.8, warm: 0.6, op: 1, follow: 0.12 })
   };
@@ -158,6 +158,7 @@
     bars.forEach(function (el, i) { el.classList.toggle("is-loaded", i < beats); });
 
     if (nav) nav.classList.toggle("is-solid", yPos > 24);
+    document.body.classList.toggle("at-close", yPos > marks.cl - vh * 0.6);
     chapters.forEach(function (ch, i) {
       if (progressPlates[i]) progressPlates[i].classList.toggle("on", yPos + vh * 0.5 >= top(ch));
     });
@@ -219,8 +220,8 @@
     }
     function success() {
       state = "up";
-      animate(stage.hold.y, 0.95, 650, function (k) { return 1 - Math.pow(1 - k, 3); }, function () {
-        if (!reduce) { stage.burst(0.8, 1.15, 0, 1); stage.burst(-0.8, 1.15, 0, 1); stage.shake = 0.5; }
+      animate(stage.hold.y, 0.62, 650, function (k) { return 1 - Math.pow(1 - k, 3); }, function () {
+        if (!reduce) { stage.burst(0.8, 0.85, 0, 1); stage.burst(-0.8, 0.85, 0, 1); stage.shake = 0.5; }
       });
       msg.textContent = "Lifted. Now plan yours on a free call with Steve.";
       label.textContent = "Lift again";
