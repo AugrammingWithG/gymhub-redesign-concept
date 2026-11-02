@@ -1,0 +1,7 @@
+# Internal pitch material: stays local, never published
+PRODUCT.md
+.impeccable/
+assets/src/
+
+node_modules/
+*.log
