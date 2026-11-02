@@ -47,9 +47,9 @@
     return { d: Object.assign({}, rest, d), m: Object.assign({}, rest, m) };
   }
   var K = {
-    hero: key({ pos: [1.85, 0.36, 1.95], look: [-0.05, 0.4, 0], fov: 31, ox: 0.0, oy: -0.31 },
+    hero: key({ pos: [1.85, 0.36, 1.95], look: [-0.05, 0.4, 0], fov: 31, ox: 0.0, oy: -0.335 },
               { pos: [2.6, 0.55, 0.62], look: [0.55, 0.3, 0], fov: 72, ox: 0, oy: -0.36 },
-              { lift: 0, beamY: 0.5, warm: 0, op: 1, follow: 0 }),
+              { lift: 0, beamY: 0.44, warm: 0, op: 1, follow: 0 }),
     stuck: key({ pos: [2.45, 0.5, 0.9], look: [0.32, 0.42, 0], fov: 34, ox: -0.2, oy: -0.02 },
                { pos: [2.3, 0.6, 1.0], look: [0.4, 0.4, 0], fov: 52, ox: 0, oy: 0.24 },
                { lift: 0, beamY: 0.55, warm: 0, op: 1, follow: 0 }),
