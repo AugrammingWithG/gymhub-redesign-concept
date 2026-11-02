@@ -11,12 +11,6 @@
   root.classList.add("story-on");
   if (!reduce && !root.classList.contains("no-3d")) root.classList.add("story-pins");
 
-  /* ---------- weighted scroll ---------- */
-  var lenis = null;
-  if (!reduce && window.Lenis) {
-    lenis = new window.Lenis({ lerp: 0.09, smoothWheel: true });
-    (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
-  }
   document.addEventListener("click", function (e) {
     var a = e.target.closest && e.target.closest("a[href^='#']");
     if (!a) return;
@@ -25,8 +19,7 @@
     if (!el) return;
     e.preventDefault();
     var offset = -(nav ? nav.offsetHeight : 0);
-    if (lenis) lenis.scrollTo(el, { offset: offset });
-    else window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + offset });
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + offset, behavior: reduce ? "auto" : "smooth" });
     if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
     el.focus({ preventScroll: true });
     history.replaceState(null, "", id);
@@ -111,7 +104,7 @@
       [cl - vh * 0.2, K.lift],
       [Infinity, K.lift]
     ];
-    placeProgress();
+    chapterTops = chapters.map(top);
   }
 
   function smooth(t) { return t * t * (3 - 2 * t); }
@@ -139,7 +132,7 @@
   var progressPlates = Array.prototype.slice.call(document.querySelectorAll(".minibar__plates i"));
   var calcDirty = true;
 
-  function placeProgress() {}
+  var chapterTops = [];
 
   function activate(list, n) { list.forEach(function (el, i) { el.classList.toggle("is-active", i === n); }); }
 
@@ -159,8 +152,8 @@
 
     if (nav) nav.classList.toggle("is-solid", yPos > 24);
     document.body.classList.toggle("at-close", yPos > marks.cl - vh * 0.6);
-    chapters.forEach(function (ch, i) {
-      if (progressPlates[i]) progressPlates[i].classList.toggle("on", yPos + vh * 0.5 >= top(ch));
+    chapterTops.forEach(function (t, i) {
+      if (progressPlates[i]) progressPlates[i].classList.toggle("on", yPos + vh * 0.5 >= t);
     });
 
     if (!stage) return;

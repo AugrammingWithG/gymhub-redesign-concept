@@ -56,11 +56,16 @@
     } while (g.measureText(text).width > maxW && size > 20);
   }
 
+  var faceCache = {};
   function faceTexture(top, bottom, ink) {
-    var S = 1024, c = document.createElement("canvas");
+    var cacheKey = top + "|" + bottom + "|" + ink;
+    if (faceCache[cacheKey]) return faceCache[cacheKey];
+    var S = 512, c = document.createElement("canvas");
+    var k = S / 1024;
     c.width = c.height = S;
     var g = c.getContext("2d");
     try { g.fontStretch = "expanded"; } catch (e) { /* older canvas */ }
+    g.scale(k, k); S = 1024;
     g.textAlign = "center"; g.textBaseline = "middle";
     var shade = ink === "#ffffff" ? "rgba(0,0,0,.28)" : "rgba(255,255,255,.35)";
 
@@ -93,7 +98,8 @@
 
     var t = new T.CanvasTexture(c);
     t.encoding = T.sRGBEncoding;
-    t.anisotropy = 8;
+    t.anisotropy = 4;
+    faceCache[cacheKey] = t;
     return t;
   }
 
@@ -174,7 +180,7 @@
       [R, h - 0.005], [0.219, h], [0.199, h], [0.186, hr], [0.0858, hr], [0.0858, -hr]
     ].map(function (p) { return new T.Vector2(p[0], p[1]); });
     var rubber = new T.Mesh(
-      new T.LatheGeometry(rubberPts, 96),
+      new T.LatheGeometry(rubberPts, 64),
       new T.MeshStandardMaterial({ color: spec.color, roughness: 0.58, metalness: 0, side: T.DoubleSide, envMapIntensity: 0.55 })
     );
     rubber.rotation.z = -Math.PI / 2;
@@ -189,7 +195,7 @@
 
     if (top) {
       var decal = new T.Mesh(
-        new T.RingGeometry(0.0875, 0.1872, 96, 1),
+        new T.RingGeometry(0.0875, 0.1872, 64, 1),
         new T.MeshStandardMaterial({
           map: faceTexture(top, bottom, spec.ink), transparent: true, roughness: 0.6,
           polygonOffset: true, polygonOffsetFactor: -2, depthWrite: false
@@ -212,6 +218,17 @@
     return g;
   }
 
+  /* Show everything once to upload textures and compile shaders up front. */
+  BarScene.prototype.prewarm = function () {
+    var r = this.renderer, hidden = [];
+    this.scene.traverse(function (o) {
+      if (!o.visible) { hidden.push(o); o.visible = true; }
+      if (o.material && o.material.map) r.initTexture(o.material.map);
+    });
+    r.compile(this.scene, this.camera);
+    hidden.forEach(function (o) { o.visible = false; });
+  };
+
   /* ---------- easing ---------- */
   function easeSettle(t) { // heavy slide with a small rebound off the stack
     var s = 1.15;
@@ -231,12 +248,12 @@
     this.clock = new T.Clock();
 
     var r = this.renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
-    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
     r.outputEncoding = T.sRGBEncoding;
     r.toneMapping = T.ACESFilmicToneMapping;
     r.toneMappingExposure = 1.05;
     r.shadowMap.enabled = true;
-    r.shadowMap.type = T.VSMShadowMap;
+    r.shadowMap.type = T.PCFSoftShadowMap;
 
     var sc = this.scene = new T.Scene();
     sc.environment = buildEnv(r);
@@ -247,8 +264,7 @@
     var key = new T.DirectionalLight(0xffffff, 2.4);
     key.position.set(1.6, 3.4, 2.2);
     key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048);
-    key.shadow.radius = 9; key.shadow.blurSamples = 16;
+    key.shadow.mapSize.set(1024, 1024);
     key.shadow.bias = -0.0004;
     var sc2 = key.shadow.camera; sc2.left = -1.6; sc2.right = 1.6; sc2.top = 1.6; sc2.bottom = -1.6; sc2.near = 0.5; sc2.far = 8;
     sc.add(key);
@@ -282,6 +298,7 @@
       window.addEventListener("pointermove", function (e) {
         self.pointer.tx = e.clientX / window.innerWidth - 0.5;
         self.pointer.ty = e.clientY / window.innerHeight - 0.5;
+        if (self.visible) self.request();
       }, { passive: true });
     }
   }
@@ -495,7 +512,7 @@
     var f = this.view || this.frameSpec, pt = this.pointer;
     var hy = this.view ? (this.hold ? this.hold.y : 0) * (this.view.follow || 0) : 0;
     pt.x += (pt.tx - pt.x) * 0.05; pt.y += (pt.ty - pt.y) * 0.05;
-    var drift = reduceMotion ? 0 : Math.sin(now * 0.25) * 0.03;
+    var drift = 0;
     this.shake *= 0.86;
     var sk = this.shake > 0.01 ? (Math.random() - 0.5) * 0.006 * this.shake : 0;
     var par = this.view ? 0.5 : 1;
@@ -508,7 +525,7 @@
     this.renderer.render(this.scene, this.camera);
 
     var settling = this.shake > 0.01 || Math.abs(pt.tx - pt.x) > 0.001 || Math.abs(pt.ty - pt.y) > 0.001;
-    if (moving || settling || this.busy || (this.opts.parallax && !reduceMotion)) this.request();
+    if (moving || settling || this.busy) this.request();
   };
 
   /* Stage only: camera, lift, ceiling and light come from an externally driven view object. */
@@ -537,14 +554,14 @@
       var small = window.matchMedia("(max-width: 820px)").matches;
       var view = { pos: [1.85, 0.3, 1.95], look: [-0.05, 0.42, 0], fov: 31, ox: 0.12, oy: -0.165, lift: 0, beamY: 0.62, warm: 0, follow: 0 };
       var stage = new BarScene(stageCanvas, { parallax: !small, stagger: 0.12, fov: 31, view: view });
-      stage.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1.25 : 1.5));
+      stage.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 1 : 1.25));
       if (small) stage.renderer.shadowMap.enabled = false;
       stage.hold = { y: 0 };
       stage.addCeiling();
       stage.visible = true;
 
       var plate = function (kind, top, bottom) {
-        return stage.addPair(function (isNear) { return makePlate(kind, isNear ? top : "GYMHUB", isNear ? bottom : ""); });
+        return stage.addPair(function (isNear) { return makePlate(kind, isNear ? top : null, isNear ? bottom : ""); });
       };
       var gym = [plate("black", "YOUR GYM", "solid"), plate("black", "YOUR GYM", "solid")];
       var results = [
@@ -582,6 +599,7 @@
         return { shown: shown.length, total: list.length };
       };
 
+      stage.prewarm();
       stage.showPlan("gym");
       api.stage = stage;
     }
@@ -606,6 +624,7 @@
         sys.addPair(function (isNear) { return makePlate(p[0], isNear ? p[1] : "GYMHUB", isNear ? p[2] : ""); });
       });
       sys.addPair(function () { return makeCollar(); });
+      sys.prewarm();
       sys.renderOnce();
       api.system = sys;
     }
