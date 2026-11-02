@@ -393,7 +393,7 @@
       g.beginPath(); g.ellipse(Math.random() * 1024, Math.random() * 64, 60 + Math.random() * 120, 6 + Math.random() * 10, 0, 0, Math.PI * 2); g.fill();
     }
     var t = new T.CanvasTexture(c);
-    t.wrapS = t.wrapT = T.RepeatWrapping;
+    t.wrapS = T.MirroredRepeatWrapping; t.wrapT = T.RepeatWrapping; // mirrored so tile edges always meet
     t.repeat.set(2, 1);
     t.encoding = T.sRGBEncoding;
     t.anisotropy = 8;
