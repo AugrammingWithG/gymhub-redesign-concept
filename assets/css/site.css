@@ -137,7 +137,7 @@ h1, h2, h3 { margin: 0; }
 [data-plate="red"] { --plate: var(--red); --plate-ink: #fff; }
 [data-plate="blue"] { --plate: var(--blue); --plate-ink: #fff; }
 [data-plate="yellow"] { --plate: var(--yellow); --plate-ink: #171717; }
-[data-plate="green"] { --plate: var(--green); --plate-ink: #fff; }
+[data-plate="green"] { --plate: var(--green); --plate-ink: var(--navy-deep); }
 [data-plate="white"] { --plate: var(--white); --plate-ink: #171717; }
 [data-plate="collar"] { --plate: var(--steel-hi); --plate-ink: #171717; }
 
@@ -374,7 +374,7 @@ h1, h2, h3 { margin: 0; }
 .ebook .btn { justify-self: start; }
 .fine { font-size: .85rem; color: var(--steel); }
 .form-error { color: var(--red-text); font-weight: 600; font-size: .95rem; }
-.form-done { padding: 14px 16px; border-radius: var(--radius); background: var(--green); color: #fff; }
+.form-done { padding: 14px 16px; border-radius: var(--radius); background: var(--green); color: var(--navy-deep); }
 .ebook.is-done .field, .ebook.is-done .btn, .ebook.is-done .fine { display: none; }
 
 .group { display: grid; gap: 14px; align-content: start; padding-left: clamp(24px, 4vw, 56px); border-left: 1px solid var(--line); }
