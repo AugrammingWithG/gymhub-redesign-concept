@@ -40,7 +40,7 @@
     return { d: Object.assign({}, rest, d), m: Object.assign({}, rest, m) };
   }
   var K = {
-    hero: key({ pos: [3.7, 1.05, 3.5], look: [0, 0.62, 0], fov: 30, ox: -0.26, oy: -0.04 },
+    hero: key({ pos: [2.45, 0.6, 2.25], look: [0.05, 0.42, 0], fov: 30, ox: -0.24, oy: 0.07 },
               { pos: [2.6, 0.55, 0.62], look: [0.55, 0.3, 0], fov: 72, ox: 0, oy: -0.36, rack: 0 },
               { lift: 0, beamY: 0.44, warm: 0, op: 1, follow: 0, rack: 1 }),
     stuck: key({ pos: [2.45, 0.5, 0.9], look: [0.32, 0.42, 0], fov: 34, ox: -0.2, oy: -0.02 },
@@ -65,7 +65,7 @@
   /* the hero rack fits the right half: squarer screens pull the camera back along its line of sight */
   var heroPos = K.hero.d.pos.slice();
   function fitHero() {
-    var f = Math.max(1, Math.min(1.5, 2.3 / (window.innerWidth / window.innerHeight))), L = K.hero.d.look;
+    var f = Math.max(1, Math.min(1.4, 2.15 / (window.innerWidth / window.innerHeight))), L = K.hero.d.look;
     K.hero.d.pos = heroPos.map(function (p, i) { return L[i] + (p - L[i]) * f; });
   }
   function hidden(k) { return { d: Object.assign({}, k.d, { op: 0 }), m: Object.assign({}, k.m, { op: 0 }) }; }

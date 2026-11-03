@@ -458,7 +458,7 @@
     this.rack = rack; this.rackMat = coat;
     return beam;
   };
-  var BEAM_L = 3.6, RACK_X = 1.5, RACK_H = 1.55;
+  var BEAM_L = 3.6, RACK_X = 1.5, RACK_H = 1.2;
   function holesTexture() { // the upright's hole pattern, one column of punched holes
     var c = document.createElement("canvas");
     c.width = 32; c.height = 1024;
