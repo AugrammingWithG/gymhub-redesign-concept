@@ -269,10 +269,10 @@ h1, h2, h3 { margin: 0; }
   margin-left: calc(-1 * var(--gutter) - max(0px, (100vw - var(--max)) / 2)); }
 .steve__photo img { height: 100%; aspect-ratio: auto; }
 .steve__photo::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg, rgba(6, 26, 60, 0) 52%, var(--rubber) 99%), linear-gradient(0deg, rgba(6, 26, 60, .75), rgba(6, 26, 60, 0) 32%); }
+  background: linear-gradient(90deg, rgba(6, 26, 60, 0) 45%, rgba(6, 26, 60, .55) 72%, var(--rubber) 99%), linear-gradient(0deg, rgba(6, 26, 60, .75), rgba(6, 26, 60, 0) 32%); }
 .steve__photo figcaption { z-index: 2; left: max(14px, calc(var(--gutter) + max(0px, (100vw - var(--max)) / 2))); }
 .steve__copy { padding-top: clamp(24px, 6vh, 72px); }
-.steve__copy h2 { position: relative; z-index: 2; margin-left: calc(-1 * clamp(48px, 9vw, 150px)); text-shadow: 0 4px 40px rgba(0, 11, 47, .7); }
+.steve__copy h2 { position: relative; z-index: 2; margin-left: calc(-1 * clamp(48px, 9vw, 150px)); }
 
 /* PR board: his record as a scoreboard of lifts */
 .prs__title { margin-top: 2.6rem; color: var(--steel); }
