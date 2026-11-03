@@ -279,8 +279,11 @@ h1, h2, h3 { margin: 0; }
 .prs__title { margin-top: 2.6rem; color: var(--steel); }
 .prs { margin: .9rem 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .pr { position: relative; padding: 22px 22px 24px; background: var(--rubber-2); }
-.pr::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--plate); }
-.pr dt { color: var(--steel-hi); }
+.pr dt { display: flex; align-items: flex-start; gap: 9px; color: var(--steel-hi); }
+.pr dt::before { /* a plate seen end-on, like the filter chips */
+  content: ""; flex: none; width: 14px; height: 14px; margin-top: -1px; border-radius: 50%;
+  background: radial-gradient(circle, var(--rubber-2) 0 22%, var(--plate) 24%); box-shadow: 0 0 0 1px rgba(0, 0, 0, .35);
+}
 .pr dd { margin: 0; }
 .pr__num { margin-top: .5rem !important; display: flex; align-items: baseline; gap: .25rem; font-size: clamp(2.4rem, 1.8vw + 1.3rem, 3.6rem); font-weight: 850; font-stretch: 125%; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--chalk); }
 .pr__num small { white-space: nowrap; font-size: .36em; font-weight: 760; letter-spacing: 0; color: var(--plate-text, var(--chalk-dim)); }
