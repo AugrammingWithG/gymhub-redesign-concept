@@ -19,10 +19,10 @@
   var PLATES = {
     red: { color: "#d7261e", t: 0.054, ink: "#ffffff" },
     blue: { color: "#1f55b5", t: 0.046, ink: "#ffffff" },
-    yellow: { color: "#f2c200", t: 0.038, ink: "#171717" },
-    green: { color: "#1b7d3d", t: 0.032, ink: "#ffffff" },
+    yellow: { color: "#f5e600", t: 0.038, ink: "#171717" },
+    green: { color: "#21a567", t: 0.032, ink: "#ffffff" },
     white: { color: "#f2f2ee", t: 0.028, ink: "#171717" },
-    black: { color: "#232427", t: 0.06, ink: "#c3cacd" },
+    black: { color: "#16233f", t: 0.06, ink: "#c5cfe6" },
     change: { color: "#aeb6ba", t: 0.02, ink: "#171717", small: 0.118 }
   };
   var R = 0.225;            // plate radius (450 mm)
@@ -108,7 +108,7 @@
     var room = new T.Scene();
     var box = new T.Mesh(new T.BoxGeometry(12, 6, 12), new T.MeshBasicMaterial({ color: 0x34383d, side: T.BackSide }));
     room.add(box);
-    var floor = new T.Mesh(new T.PlaneGeometry(12, 12), new T.MeshBasicMaterial({ color: 0x141516 }));
+    var floor = new T.Mesh(new T.PlaneGeometry(12, 12), new T.MeshBasicMaterial({ color: 0x061a3c }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = -2.95; room.add(floor);
     var strip = new T.MeshBasicMaterial({ color: 0xffffff });
     [-3.5, -1, 1.5, 4].forEach(function (z) {
@@ -260,7 +260,7 @@
 
     this.camera = new T.PerspectiveCamera(opts.fov || 26, 1, 0.05, 40);
 
-    sc.add(new T.HemisphereLight(0xdfe6ea, 0x0c0d0e, 0.35));
+    sc.add(new T.HemisphereLight(0xdfe6f5, 0x061a3c, 0.4));
     var key = new T.DirectionalLight(0xffffff, 2.4);
     key.position.set(1.6, 3.4, 2.2);
     key.castShadow = true;
