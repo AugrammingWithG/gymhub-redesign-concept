@@ -338,7 +338,8 @@
         if (it.on) delay += this.opts.stagger || 0;
       }
     }
-    if (reduceMotion) this.items.forEach(function (it) { it.start = -10; });
+    // off screen there is nothing to watch: snap, so plans never cross mid-slide when the stage fades back in
+    if (reduceMotion || !this.visible) this.items.forEach(function (it) { it.start = -10; });
     this.request();
   };
 
@@ -501,7 +502,7 @@
       if (p >= 1) {
         self.place(it, it.to);
         if (!it.on) { it.near.visible = it.far.visible = false; }
-        else if (!it.landed) { it.landed = true; if (!reduceMotion) self.shake = 1; }
+        else if (!it.landed) { it.landed = true; if (!reduceMotion && !self.view) self.shake = 1; } // the stage close-ups stay steady
         return;
       }
       moving = true;

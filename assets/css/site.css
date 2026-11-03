@@ -32,6 +32,7 @@
   --gutter: clamp(16px, 4vw, 48px);
   --max: 1280px;
   --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-settle: cubic-bezier(.22, 1.18, .36, 1); /* a heavy plate: lands, dips a hair, settles */
   --radius: 4px;
 }
 
@@ -455,9 +456,27 @@ h1, h2, h3 { margin: 0; }
 main, .foot { position: relative; z-index: 1; }
 .foot { background: #0e0f10; }
 
-/* the one reveal: stamped up from below */
-.story-on [data-reveal] { clip-path: inset(0 0 100% 0); transform: translateY(28px); transition: clip-path .95s var(--ease-out), transform .95s var(--ease-out); }
-.story-on [data-reveal].in { clip-path: inset(-10% -10% -10% -10%); transform: none; }
+/* the one reveal: stamped up from below. --rise animates the stamp; --py is scroll depth (motion.js), applied with no lag */
+@property --rise { syntax: "<length>"; inherits: false; initial-value: 0px; }
+.story-on [data-reveal] {
+  --rise: 40px;
+  clip-path: inset(0 0 100% 0); transform: translate3d(0, calc(var(--rise) + var(--py, 0px)), 0);
+  transition: clip-path .95s var(--ease-out) var(--d, 0s), --rise 1.1s var(--ease-settle) var(--d, 0s);
+}
+.story-on [data-reveal].in { --rise: 0px; clip-path: inset(-10% -10% -10% -10%); }
+.story-on [data-reveal].done { clip-path: none; }
+
+/* headlines rise word by word out of their own masks; the heading itself is never clipped */
+.story-on [data-split][data-reveal] { clip-path: none; --rise: 0px; }
+.motion-on .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .14em; margin-bottom: -.14em; }
+.motion-on .w__i { display: inline-block; transform: translateY(108%); transition: transform 1s var(--ease-settle) calc(var(--d, 0s) + var(--wi, 0) * 55ms); }
+.motion-on .in .w__i { transform: none; }
+
+/* Steve's photo drifts inside its frame */
+.motion-on .steve__photo { overflow: hidden; border-radius: var(--radius); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, .8); }
+.motion-on .steve__photo img { box-shadow: none; transform: scale(1.14); will-change: transform; }
+.motion-on .steve__photo figcaption { z-index: 1; }
+.motion-on .hero__copy { will-change: transform, opacity; }
 
 /* pinned scenes: a tall section with a viewport-high sticky frame */
 .pin { position: relative; }

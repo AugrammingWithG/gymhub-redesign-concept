@@ -28,7 +28,7 @@
   /* ---------- the one reveal: stamped in from below ---------- */
   var reveals = Array.prototype.slice.call(document.querySelectorAll("[data-reveal]"));
   function reveal() {
-    var line = window.innerHeight * 0.98;
+    var line = window.innerHeight * 0.9;
     reveals = reveals.filter(function (el) {
       if (el.getBoundingClientRect().top < line) { el.classList.add("in"); return false; }
       return true;
