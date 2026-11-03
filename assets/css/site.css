@@ -267,7 +267,7 @@ h1, h2, h3 { margin: 0; }
 .steve__grid { align-items: start; }
 .steve__photo { position: sticky; top: calc(var(--nav-h) + 24px); height: calc(100svh - var(--nav-h) - 48px); min-height: 520px;
   margin-left: calc(-1 * var(--gutter) - max(0px, (100vw - var(--max)) / 2)); }
-.steve__photo img { height: 100%; aspect-ratio: auto; }
+.steve__photo img { height: 100%; aspect-ratio: auto; object-position: 45% 8%; } /* keep Steve's head in frame however wide the panel gets */
 .steve__photo::after { content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(90deg, rgba(6, 26, 60, 0) 45%, rgba(6, 26, 60, .55) 72%, var(--rubber) 99%), linear-gradient(0deg, rgba(6, 26, 60, .75), rgba(6, 26, 60, 0) 32%); }
 .steve__photo figcaption { z-index: 2; left: max(14px, calc(var(--gutter) + max(0px, (100vw - var(--max)) / 2))); }
@@ -281,8 +281,8 @@ h1, h2, h3 { margin: 0; }
 .pr::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--plate); }
 .pr dt { color: var(--steel-hi); }
 .pr dd { margin: 0; }
-.pr__num { margin-top: .5rem !important; display: flex; align-items: baseline; gap: .25rem; font-size: clamp(2.6rem, 2.6vw + 1.2rem, 4.2rem); font-weight: 850; font-stretch: 125%; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--chalk); }
-.pr__num small { font-size: .36em; font-weight: 760; letter-spacing: 0; color: var(--plate-text, var(--chalk-dim)); }
+.pr__num { margin-top: .5rem !important; display: flex; align-items: baseline; gap: .25rem; font-size: clamp(2.4rem, 1.8vw + 1.3rem, 3.6rem); font-weight: 850; font-stretch: 125%; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--chalk); }
+.pr__num small { white-space: nowrap; font-size: .36em; font-weight: 760; letter-spacing: 0; color: var(--plate-text, var(--chalk-dim)); }
 .pr[data-plate="red"] { --plate-text: var(--red-text); }
 .pr[data-plate="blue"] { --plate-text: #8fb3ff; }
 .pr[data-plate="yellow"] { --plate-text: var(--brand-yellow); }

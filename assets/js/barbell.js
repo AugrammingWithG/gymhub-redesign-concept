@@ -424,13 +424,13 @@
     var bolt = getShared().steel;
     var beam = new T.Group();
     [[0.012, 0.006], [0.012, 0.094]].forEach(function (f) { // bottom and top flanges
-      var m = new T.Mesh(new T.BoxGeometry(7, f[0], 0.11), steel);
+      var m = new T.Mesh(new T.BoxGeometry(BEAM_L, f[0], 0.11), steel);
       m.position.y = f[1]; m.castShadow = true; beam.add(m);
     });
-    var web = new T.Mesh(new T.BoxGeometry(7, 0.08, 0.014), steel);
+    var web = new T.Mesh(new T.BoxGeometry(BEAM_L, 0.08, 0.014), steel);
     web.position.y = 0.05; web.castShadow = true; beam.add(web);
     var plateMat = new T.MeshStandardMaterial({ color: 0x6f757a, metalness: 0.7, roughness: 0.5 });
-    [-1.9, -0.7, 0.7, 1.9].forEach(function (x) { // bolted splice plates on both faces of the web
+    [-0.7, 0.7].forEach(function (x) { // bolted splice plates on both faces of the web
       [-1, 1].forEach(function (side) {
         var sp = new T.Mesh(new T.BoxGeometry(0.17, 0.066, 0.008), plateMat);
         sp.position.set(x, 0.05, side * 0.011); beam.add(sp);
@@ -442,8 +442,34 @@
     });
     this.scene.add(beam);
     this.beam = beam;
+
+    /* the power rack: two punched uprights on floor feet, holding the beam in the hero */
+    var coat = new T.MeshStandardMaterial({ color: 0x1b2742, metalness: 0.55, roughness: 0.45, map: holesTexture(), transparent: true });
+    var rack = new T.Group();
+    [-RACK_X, RACK_X].forEach(function (x) {
+      var post = new T.Mesh(new T.BoxGeometry(0.075, RACK_H, 0.075), coat);
+      post.position.set(x, RACK_H / 2, 0); post.castShadow = true; rack.add(post);
+      var foot = new T.Mesh(new T.BoxGeometry(0.08, 0.05, 0.7), coat);
+      foot.position.set(x, 0.025, 0); foot.castShadow = true; rack.add(foot);
+      var cap = new T.Mesh(new T.BoxGeometry(0.09, 0.012, 0.09), getShared().steel);
+      cap.position.set(x, RACK_H + 0.006, 0); rack.add(cap);
+    });
+    this.scene.add(rack);
+    this.rack = rack; this.rackMat = coat;
     return beam;
   };
+  var BEAM_L = 3.6, RACK_X = 1.5, RACK_H = 1.55;
+  function holesTexture() { // the upright's hole pattern, one column of punched holes
+    var c = document.createElement("canvas");
+    c.width = 32; c.height = 1024;
+    var g = c.getContext("2d");
+    g.fillStyle = "#ffffff"; g.fillRect(0, 0, 32, 1024);
+    g.fillStyle = "#05070d";
+    for (var y = 18; y < 1024; y += 34) { g.beginPath(); g.arc(16, y, 5, 0, Math.PI * 2); g.fill(); }
+    var t = new T.CanvasTexture(c);
+    t.encoding = T.sRGBEncoding;
+    return t;
+  }
 
   BarScene.prototype.setLoaded = function (n) {
     for (var i = 0; i < this.items.length; i++) this.items[i].on = i < n;
@@ -540,6 +566,7 @@
     }
     this.rig.position.y = R + (v.lift || 0) + (this.hold ? this.hold.y : 0);
     if (this.beam) { this.beam.position.y = v.beamY; this.beam.visible = v.beamY < 2.4; }
+    if (this.rack) { var ro = v.rack || 0; this.rack.visible = ro > 0.01; this.rackMat.opacity = ro; this.rackMat.depthWrite = ro > 0.99; }
     var warm = v.warm || 0;
     this.renderer.toneMappingExposure = 1.05 + warm * 0.14;
     if (this.key) this.key.color.setRGB(1, 1 - warm * 0.08, 1 - warm * 0.2);

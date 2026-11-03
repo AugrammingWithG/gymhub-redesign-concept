@@ -40,9 +40,9 @@
     return { d: Object.assign({}, rest, d), m: Object.assign({}, rest, m) };
   }
   var K = {
-    hero: key({ pos: [1.85, 0.36, 1.95], look: [-0.05, 0.4, 0], fov: 31, ox: 0.0, oy: -0.335 },
-              { pos: [2.6, 0.55, 0.62], look: [0.55, 0.3, 0], fov: 72, ox: 0, oy: -0.36 },
-              { lift: 0, beamY: 0.44, warm: 0, op: 1, follow: 0 }),
+    hero: key({ pos: [3.7, 1.05, 3.5], look: [0, 0.62, 0], fov: 30, ox: -0.26, oy: -0.04 },
+              { pos: [2.6, 0.55, 0.62], look: [0.55, 0.3, 0], fov: 72, ox: 0, oy: -0.36, rack: 0 },
+              { lift: 0, beamY: 0.44, warm: 0, op: 1, follow: 0, rack: 1 }),
     stuck: key({ pos: [2.45, 0.5, 0.9], look: [0.32, 0.42, 0], fov: 34, ox: -0.2, oy: -0.02 },
                { pos: [2.3, 0.6, 1.0], look: [0.4, 0.4, 0], fov: 52, ox: 0, oy: 0.24 },
                { lift: 0, beamY: 0.55, warm: 0, op: 1, follow: 0 }),
@@ -62,6 +62,12 @@
               { pos: [2.2, 0.55, 1.4], look: [0.3, 0.45, 0], fov: 54, ox: 0, oy: 0.26 },
               { lift: 0, beamY: 2.8, warm: 0.6, op: 1, follow: 0.12 })
   };
+  /* the hero rack fits the right half: squarer screens pull the camera back along its line of sight */
+  var heroPos = K.hero.d.pos.slice();
+  function fitHero() {
+    var f = Math.max(1, Math.min(1.5, 2.3 / (window.innerWidth / window.innerHeight))), L = K.hero.d.look;
+    K.hero.d.pos = heroPos.map(function (p, i) { return L[i] + (p - L[i]) * f; });
+  }
   function hidden(k) { return { d: Object.assign({}, k.d, { op: 0 }), m: Object.assign({}, k.m, { op: 0 }) }; }
   /* the calculator bar backs away and sinks as the System's own bar takes over */
   K.gone = key({ pos: [3.2, 0.7, 1.1], look: [0.55, 0.36, 0], fov: 40, ox: -0.25, oy: 0.12 },
@@ -85,6 +91,7 @@
   function top(el) { return el.getBoundingClientRect().top + window.scrollY; }
   function span(el) { return Math.max(1, el.offsetHeight - window.innerHeight); }
   function build() {
+    fitHero();
     var vh = window.innerHeight, c = top(S.ceiling), cs = span(S.ceiling), o = top(S.onbar), os = span(S.onbar);
     var y = top(S.yours), yh = S.yours.offsetHeight, cl = top(S.close);
     marks = { c: c, cs: cs, o: o, os: os, rack: top(S.rack), y: y, yh: yh, sys: top(S.system), cl: cl };
@@ -125,7 +132,7 @@
       look: [mix(a.look[0], b.look[0], t), mix(a.look[1], b.look[1], t), mix(a.look[2], b.look[2], t)],
       fov: mix(a.fov, b.fov, t), ox: mix(a.ox, b.ox, t), oy: mix(a.oy, b.oy, t),
       lift: mix(a.lift, b.lift, t), beamY: mix(a.beamY, b.beamY, t), warm: mix(a.warm, b.warm, t),
-      op: mix(a.op, b.op, t), follow: t < 0.5 ? a.follow : b.follow
+      op: mix(a.op, b.op, t), rack: mix(a.rack || 0, b.rack || 0, t), follow: t < 0.5 ? a.follow : b.follow
     };
   }
 
