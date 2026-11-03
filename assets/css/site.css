@@ -263,10 +263,32 @@ h1, h2, h3 { margin: 0; }
 .steve__photo figcaption { position: absolute; left: 14px; bottom: 14px; padding: 7px 10px; border-radius: 2px; background: var(--chalk); color: var(--rubber); letter-spacing: .12em; }
 .steve__photo img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, .8); }
 .steve__lede { margin-top: 1.4rem; font-size: 1.15rem; color: var(--chalk-dim); max-width: 58ch; }
-.record { margin: 2rem 0 0; }
-.record > div { display: grid; grid-template-columns: minmax(0, 13rem) 1fr; gap: .4rem 1.5rem; padding-block: 14px; border-top: 1px solid var(--line); }
-.record dt { font-weight: 760; font-stretch: 110%; }
-.record dd { margin: 0; color: var(--chalk-dim); }
+/* the photo stands full height at the screen edge while his record scrolls past; the headline crosses onto it */
+.steve__grid { align-items: start; }
+.steve__photo { position: sticky; top: calc(var(--nav-h) + 24px); height: calc(100svh - var(--nav-h) - 48px); min-height: 520px;
+  margin-left: calc(-1 * var(--gutter) - max(0px, (100vw - var(--max)) / 2)); }
+.steve__photo img { height: 100%; aspect-ratio: auto; }
+.steve__photo::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(6, 26, 60, 0) 52%, var(--rubber) 99%), linear-gradient(0deg, rgba(6, 26, 60, .75), rgba(6, 26, 60, 0) 32%); }
+.steve__photo figcaption { z-index: 2; left: max(14px, calc(var(--gutter) + max(0px, (100vw - var(--max)) / 2))); }
+.steve__copy { padding-top: clamp(24px, 6vh, 72px); }
+.steve__copy h2 { position: relative; z-index: 2; margin-left: calc(-1 * clamp(48px, 9vw, 150px)); text-shadow: 0 4px 40px rgba(0, 11, 47, .7); }
+
+/* PR board: his record as a scoreboard of lifts */
+.prs__title { margin-top: 2.6rem; color: var(--steel); }
+.prs { margin: .9rem 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.pr { position: relative; padding: 22px 22px 24px; background: var(--rubber-2); }
+.pr::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--plate); }
+.pr dt { color: var(--steel-hi); }
+.pr dd { margin: 0; }
+.pr__num { margin-top: .5rem !important; display: flex; align-items: baseline; gap: .25rem; font-size: clamp(2.6rem, 2.6vw + 1.2rem, 4.2rem); font-weight: 850; font-stretch: 125%; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--chalk); }
+.pr__num small { font-size: .36em; font-weight: 760; letter-spacing: 0; color: var(--plate-text, var(--chalk-dim)); }
+.pr[data-plate="red"] { --plate-text: var(--red-text); }
+.pr[data-plate="blue"] { --plate-text: #8fb3ff; }
+.pr[data-plate="yellow"] { --plate-text: var(--brand-yellow); }
+.pr[data-plate="green"] { --plate-text: var(--brand-green-text); }
+.pr__what { margin-top: .7rem !important; color: var(--chalk-dim); font-size: .95rem; line-height: 1.45; }
+.pull .hl { color: var(--brand-yellow); font-weight: inherit; }
 .pull { margin: 2.2rem 0 0; padding: 0; }
 .pull p { font-size: clamp(1.35rem, 1vw + 1rem, 1.75rem); font-weight: 680; font-stretch: 105%; line-height: 1.3; text-wrap: pretty; }
 .pull p::before { content: "“"; color: var(--steel); }
@@ -480,7 +502,7 @@ main, .foot { position: relative; z-index: 1; }
 .motion-on .in .w__i { transform: none; }
 
 /* Steve's photo drifts inside its frame */
-.motion-on .steve__photo { overflow: hidden; border-radius: var(--radius); box-shadow: 0 30px 60px -24px rgba(0, 0, 0, .8); }
+.motion-on .steve__photo { overflow: hidden; border-radius: 0 var(--radius) var(--radius) 0; }
 .motion-on .steve__photo img { box-shadow: none; transform: scale(1.14); will-change: transform; }
 .motion-on .steve__photo figcaption { z-index: 1; }
 .motion-on .hero__copy { will-change: transform, opacity; }
@@ -608,8 +630,14 @@ main, .foot { position: relative; z-index: 1; }
   .results__head, .system__head, .faq__grid { grid-template-columns: 1fr; }
   .faq__grid > h2 { position: static; }
   .steve__grid { grid-template-columns: 1fr; }
-  .steve__photo { max-width: 460px; }
-  .record > div { grid-template-columns: 1fr; }
+  .steve__photo { position: relative; top: auto; height: 64svh; min-height: 380px; max-width: none; margin-inline: calc(-1 * var(--gutter)); }
+  .motion-on .steve__photo { border-radius: 0; }
+  .steve__photo::after { background: linear-gradient(0deg, var(--rubber) 2%, rgba(6, 26, 60, 0) 45%); }
+  .steve__photo figcaption { top: 14px; bottom: auto; left: var(--gutter); }
+  .steve__copy { padding-top: 0; margin-top: -4.5rem; }
+  .steve__copy h2 { margin-left: 0; }
+  .pr { padding: 16px 14px 18px; }
+  .pr__what { font-size: .88rem; }
   .callsteps { grid-template-columns: 1fr; gap: 28px; }
   .callsteps::before { left: 27px; right: auto; top: 0; bottom: 0; width: 6px; height: auto; }
   .callsteps li { display: grid; grid-template-columns: 60px 1fr; column-gap: 20px; }

@@ -42,7 +42,7 @@
     [".hero__lede, .hero__actions, .hero__fine, .hero .lift-try", 0.32, 0.1],
     [".onbar__intro, .results__intro, .steve__lede, .yourbar__lede, .close__lede, .promise, .filters, .pull, .steve__photo", 0, 0],
     [".rack > .plate-card", 0, 0.08, 3],
-    [".record > div", 0, 0.09],
+    [".prs > .pr", 0, 0.1],
     [".awards > .award", 0, 0.09],
     [".callsteps > li", 0, 0.1],
     [".fit__col", 0, 0.1],
@@ -80,11 +80,11 @@
   var heroCopy = document.querySelector(".hero__copy");
 
   /* plate numbers count up as their card lands */
-  var counts = all(".rack .plate__num").map(function (el) {
+  var counts = all(".rack .plate__num, .pr__num .count").map(function (el) {
     var m = el.textContent.match(/^([^\d]*)([\d.,]+)(.*)$/);
     if (!m) return null;
     var dec = (m[2].split(".")[1] || "").length;
-    return { el: el, card: el.closest(".plate-card"), pre: m[1], val: parseFloat(m[2].replace(/,/g, "")), dec: dec, post: m[3], text: el.textContent, done: false };
+    return { el: el, card: el.closest(".plate-card, .pr"), pre: m[1], val: parseFloat(m[2].replace(/,/g, "")), dec: dec, post: m[3], text: el.textContent, done: false };
   }).filter(Boolean);
   counts.forEach(function (c) { c.el.textContent = c.pre + (0).toFixed(c.dec) + c.post; });
   function count(c) {
