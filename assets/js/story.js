@@ -63,6 +63,10 @@
               { lift: 0, beamY: 2.8, warm: 0.6, op: 1, follow: 0.12 })
   };
   function hidden(k) { return { d: Object.assign({}, k.d, { op: 0 }), m: Object.assign({}, k.m, { op: 0 }) }; }
+  /* the calculator bar backs away and sinks as the System's own bar takes over */
+  K.gone = key({ pos: [3.2, 0.7, 1.1], look: [0.55, 0.36, 0], fov: 40, ox: -0.25, oy: 0.12 },
+               { pos: [2.8, 0.75, 1.5], look: [0.5, 0.36, 0], fov: 56, ox: 0, oy: 0.42 },
+               { lift: 0, beamY: 2.8, warm: 0.3, op: 0, follow: 0 });
   /* without pinning the problem/solution/reward rows run full width, so the stage sits that scene out */
   if (!root.classList.contains("story-pins")) { K.stuck = hidden(K.stuck); K.freed = hidden(K.freed); K.risen = hidden(K.risen); }
 
@@ -98,8 +102,8 @@
       [marks.rack - vh * 0.15, hidden(K.onbar)],
       [y - vh * 0.6, hidden(K.yours)],
       [y - vh * 0.1, K.yours],
-      [y + yh - vh * 0.7, K.yours],
-      [y + yh - vh * 0.15, hidden(K.yours)],
+      [y + yh - vh * 0.95, K.yours],
+      [y + yh - vh * 0.5, K.gone],
       [cl - vh * 0.75, hidden(K.lift)],
       [cl - vh * 0.2, K.lift],
       [Infinity, K.lift]
@@ -131,6 +135,7 @@
   var chapters = Array.prototype.slice.call(document.querySelectorAll(".chapter"));
   var progressPlates = Array.prototype.slice.call(document.querySelectorAll(".minibar__plates i"));
   var calcDirty = true;
+  var sysStage = document.querySelector(".system__stage"), sysCanvas = document.getElementById("system-bar");
 
   var chapterTops = [];
 
@@ -156,6 +161,13 @@
       if (progressPlates[i]) progressPlates[i].classList.toggle("on", yPos + vh * 0.5 >= t);
     });
 
+    if (sysCanvas && !reduce) { // the System bar rises in once the stage bar has cleared
+      var sp = Math.min(1, Math.max(0, (vh - sysStage.getBoundingClientRect().top) / (vh * 0.45)));
+      sp = smooth(sp);
+      sysCanvas.style.opacity = sp.toFixed(3);
+      sysCanvas.style.transform = sp < 1 ? "translateY(" + ((1 - sp) * 48).toFixed(1) + "px)" : "";
+    }
+
     if (!stage) return;
     var v = viewAt(yPos);
     Object.assign(stage.view, v);
@@ -175,6 +187,15 @@
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", function () { build(); onScroll(); });
   window.addEventListener("load", function () { build(); onScroll(); });
+  /* fonts and images settle after load and move every section; re-measure when the page height changes */
+  if (window.ResizeObserver) {
+    var lastH = 0;
+    new ResizeObserver(function () {
+      var h = document.documentElement.scrollHeight;
+      if (h !== lastH) { lastH = h; build(); onScroll(); }
+    }).observe(document.body);
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { build(); onScroll(); });
 
   /* ---------- hold to lift ---------- */
   function Lift(btn) {
