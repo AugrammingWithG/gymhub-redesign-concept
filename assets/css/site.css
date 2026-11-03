@@ -241,8 +241,8 @@ h1, h2, h3 { margin: 0; }
 }
 .plate__unit {
   position: absolute; left: 0; right: 0; bottom: 14%;
-  text-align: center; font-weight: 750; font-stretch: 125%; letter-spacing: .1em; text-transform: uppercase;
-  font-size: 5.4cqi; line-height: 1.1; padding-inline: 22%;
+  text-align: center; font-weight: 750; font-stretch: 100%; letter-spacing: .06em; text-transform: uppercase;
+  font-size: 5.4cqi; line-height: 1.1; padding-inline: 17%; /* normal width so 13-letter words stay on the plate */
 }
 .plate-card:hover .plate { transform: rotate(-14deg); }
 .plate-card__what { color: var(--chalk-dim); font-size: .98rem; line-height: 1.45; }
